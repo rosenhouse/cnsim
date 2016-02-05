@@ -14,12 +14,12 @@ for simulating container networking
   - numHosts
   - numApps
   - distAppSize
-  - probReflexive # probably that an app connects to itself
-  - distAppDegree # distribution of degrees on graph of apps (# other apps it connects to)
+  - probReflexive: probably that an app connects to itself
+  - distAppDegree: distribution of degrees on graph of apps (num. other apps it connects to)
 
 - outputs:
   - medianAppsPerHost
-  - distHostDegree # distribution of degrees on graph of hosts
+  - distHostDegree: distribution of degrees on graph of hosts
   - distHostRouteTableSize
 
 - for the future:
