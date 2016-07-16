@@ -7,6 +7,7 @@ import (
 
 	"code.cloudfoundry.org/lager"
 
+	"github.com/rosenhouse/cnsim/distributions"
 	"github.com/rosenhouse/cnsim/handlers"
 	"github.com/rosenhouse/cnsim/simulate"
 	"github.com/tedsuo/ifrit"
@@ -47,8 +48,10 @@ func main() {
 			Logger: logger,
 		},
 		"steady_state": &handlers.SteadyState{
-			Logger:    logger,
-			Simulator: &simulate.SteadyState{},
+			Logger: logger,
+			Simulator: &simulate.SteadyState{
+				AppSizeDistribution: &distributions.GeometricWithPositiveSupport{},
+			},
 		},
 	}
 

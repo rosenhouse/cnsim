@@ -8,7 +8,14 @@ import (
 	"github.com/rosenhouse/cnsim/models"
 )
 
-type SteadyState struct{}
+//go:generate counterfeiter -o ../fakes/mean_parameterized_discrete_distribution.go --fake-name MeanParameterizedDiscreteDistribution . meanParameterizedDiscreteDistribution
+type meanParameterizedDiscreteDistribution interface {
+	Sample(mean float64) (int, error)
+}
+
+type SteadyState struct {
+	AppSizeDistribution meanParameterizedDiscreteDistribution
+}
 
 func (s *SteadyState) Execute(logger lager.Logger, req models.SteadyStateRequest) (*models.SteadyStateResponse, error) {
 	logger.Info("start", lager.Data{"input": req})
@@ -18,6 +25,16 @@ func (s *SteadyState) Execute(logger lager.Logger, req models.SteadyStateRequest
 	resp.Request = req
 	totalInstances := float64(req.NumApps) * float64(req.MeanInstancesPerApp)
 	resp.MeanInstancesPerHost = totalInstances / float64(req.NumHosts)
+	resp.Apps = make([]models.App, req.NumApps)
+	var err error
+	for i, _ := range resp.Apps {
+		resp.Apps[i].Id = i
+		resp.Apps[i].DesiredInstanceCount, err = s.AppSizeDistribution.Sample(float64(req.MeanInstancesPerApp))
+		if err != nil {
+			return nil, fmt.Errorf("sampling app size: %s", err)
+		}
+	}
+
 	logger.Info("success", lager.Data{"output": resp})
 	return &resp, nil
 }

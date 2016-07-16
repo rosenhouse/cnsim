@@ -1,23 +1,33 @@
 package simulate_test
 
 import (
+	"errors"
+
 	"code.cloudfoundry.org/lager/lagertest"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
+	"github.com/rosenhouse/cnsim/fakes"
 	"github.com/rosenhouse/cnsim/models"
 	"github.com/rosenhouse/cnsim/simulate"
 )
 
 var _ = Describe("Steady state simulator", func() {
 	var (
-		sim    *simulate.SteadyState
-		logger *lagertest.TestLogger
-		req    models.SteadyStateRequest
+		appSizeDistribution *fakes.MeanParameterizedDiscreteDistribution
+		sim                 *simulate.SteadyState
+		logger              *lagertest.TestLogger
+		req                 models.SteadyStateRequest
 	)
 
 	BeforeEach(func() {
-		sim = &simulate.SteadyState{}
+		appSizeDistribution = &fakes.MeanParameterizedDiscreteDistribution{}
+		appSizeDistribution.SampleStub = func(_ float64) (int, error) {
+			return appSizeDistribution.SampleCallCount(), nil
+		}
+		sim = &simulate.SteadyState{
+			AppSizeDistribution: appSizeDistribution,
+		}
 		logger = lagertest.NewTestLogger("test")
 		req = models.SteadyStateRequest{
 			NumHosts:            1000,
@@ -49,6 +59,27 @@ var _ = Describe("Steady state simulator", func() {
 			resp, err := sim.Execute(logger, req)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(resp.MeanInstancesPerHost).To(Equal(500.0))
+		})
+
+		It("populates the Apps list by sampling from the AppSizeDistribution", func() {
+			resp, err := sim.Execute(logger, req)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(resp.Apps).To(HaveLen(10000))
+			for i, app := range resp.Apps {
+				Expect(app.DesiredInstanceCount).To(Equal(i + 1))
+			}
+		})
+
+		Context("when sampling from the app size distribution fails", func() {
+			BeforeEach(func() {
+				appSizeDistribution.SampleReturns(0, errors.New("banana"))
+			})
+
+			It("wraps and returns the error", func() {
+				_, err := sim.Execute(logger, req)
+				Expect(err).To(MatchError("sampling app size: banana"))
+			})
+
 		})
 	})
 

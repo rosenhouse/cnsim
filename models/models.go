@@ -10,6 +10,12 @@ type SteadyStateResponse struct {
 	Request SteadyStateRequest
 
 	MeanInstancesPerHost float64
+	Apps                 []App
+}
+
+type App struct {
+	Id                   int
+	DesiredInstanceCount int
 }
 
 type APIError struct {

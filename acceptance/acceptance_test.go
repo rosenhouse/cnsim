@@ -76,6 +76,9 @@ var _ = Describe("CNSim Server", func() {
 
 		By("checking the mean instances per host")
 		Expect(responseData.MeanInstancesPerHost).To(Equal(20.0))
+
+		By("checking the mean instances per host")
+		Expect(responseData.Apps).To(HaveLen(10000))
 	})
 
 	Describe("Web form", func() {
@@ -105,6 +108,7 @@ var _ = Describe("CNSim Server", func() {
 
 			By("redirecting the user to the JSON response page", func() {
 				Eventually(page.HTML).Should(ContainSubstring(`"MeanInstancesPerHost":15`))
+				Eventually(page.HTML).Should(ContainSubstring(`"DesiredInstanceCount":4`))
 			})
 		})
 	})
