@@ -20,9 +20,9 @@ var _ = Describe("Steady state simulator", func() {
 		sim = &simulate.SteadyState{}
 		logger = lagertest.NewTestLogger("test")
 		req = models.SteadyStateRequest{
-			Hosts:           1000,
-			Apps:            10000,
-			InstancesPerApp: 50,
+			NumHosts:            1000,
+			NumApps:             10000,
+			MeanInstancesPerApp: 50,
 		}
 	})
 
@@ -59,28 +59,28 @@ var _ = Describe("Steady state simulator", func() {
 		It("returns an error when hosts out of range", func() {
 			var bad models.SteadyStateRequest
 			bad = req
-			bad.Hosts = 0
-			Expect(sim.Validate(bad)).To(MatchError("Hosts must be 1 - 1000"))
+			bad.NumHosts = 0
+			Expect(sim.Validate(bad)).To(MatchError("NumHosts must be 1 - 1000"))
 
 			bad = req
-			bad.Hosts = 1001
-			Expect(sim.Validate(bad)).To(MatchError("Hosts must be 1 - 1000"))
+			bad.NumHosts = 1001
+			Expect(sim.Validate(bad)).To(MatchError("NumHosts must be 1 - 1000"))
 
 			bad = req
-			bad.Apps = 0
-			Expect(sim.Validate(bad)).To(MatchError("Apps must be 1 - 65534"))
+			bad.NumApps = 0
+			Expect(sim.Validate(bad)).To(MatchError("NumApps must be 1 - 65534"))
 
 			bad = req
-			bad.Apps = 65535
-			Expect(sim.Validate(bad)).To(MatchError("Apps must be 1 - 65534"))
+			bad.NumApps = 65535
+			Expect(sim.Validate(bad)).To(MatchError("NumApps must be 1 - 65534"))
 
 			bad = req
-			bad.InstancesPerApp = 0
-			Expect(sim.Validate(bad)).To(MatchError("InstancesPerApp must be 1 - 100"))
+			bad.MeanInstancesPerApp = 0
+			Expect(sim.Validate(bad)).To(MatchError("MeanInstancesPerApp must be 1 - 100"))
 
 			bad = req
-			bad.InstancesPerApp = 101
-			Expect(sim.Validate(bad)).To(MatchError("InstancesPerApp must be 1 - 100"))
+			bad.MeanInstancesPerApp = 101
+			Expect(sim.Validate(bad)).To(MatchError("MeanInstancesPerApp must be 1 - 100"))
 		})
 	})
 })

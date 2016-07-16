@@ -60,9 +60,9 @@ var _ = Describe("CNSim Server", func() {
 
 	It("should compute steady-state stats on /steady_state", func() {
 		requestData := models.SteadyStateRequest{
-			Hosts:           1000,
-			Apps:            10000,
-			InstancesPerApp: 2,
+			NumHosts:            1000,
+			NumApps:             10000,
+			MeanInstancesPerApp: 2,
 		}
 		var responseData models.SteadyStateResponse
 		var apiError models.APIError
@@ -96,10 +96,10 @@ var _ = Describe("CNSim Server", func() {
 			})
 
 			By("allowing the user to fill out the form and submit it", func() {
-				Eventually(page.FindByName("Hosts")).Should(BeFound())
-				Expect(page.FindByName("Hosts").Fill("100")).To(Succeed())
-				Expect(page.FindByName("Apps").Fill("300")).To(Succeed())
-				Expect(page.FindByName("InstancesPerApp").Fill("5")).To(Succeed())
+				Eventually(page.FindByName("NumHosts")).Should(BeFound())
+				Expect(page.FindByName("NumHosts").Fill("100")).To(Succeed())
+				Expect(page.FindByName("NumApps").Fill("300")).To(Succeed())
+				Expect(page.FindByName("MeanInstancesPerApp").Fill("5")).To(Succeed())
 				Expect(page.FindByButton("Submit").Submit()).To(Succeed())
 			})
 

@@ -1,9 +1,9 @@
 package models
 
 type SteadyStateRequest struct {
-	Hosts           int
-	Apps            int
-	InstancesPerApp int
+	NumHosts            int
+	NumApps             int
+	MeanInstancesPerApp int
 }
 
 type SteadyStateResponse struct {

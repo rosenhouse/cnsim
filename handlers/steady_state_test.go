@@ -41,9 +41,9 @@ var _ = Describe("Steady State Handler", func() {
 		apiClient = sling.New().Base("http://localhost/").Client(http.DefaultClient)
 
 		reqData = models.SteadyStateRequest{
-			Hosts:           123,
-			Apps:            456,
-			InstancesPerApp: 789,
+			NumHosts:            123,
+			NumApps:             456,
+			MeanInstancesPerApp: 789,
 		}
 
 		var err error

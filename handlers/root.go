@@ -25,9 +25,9 @@ const body = `
   <body>
 	  Inputs:
 		<form action="/steady_state" method="GET">
-		  <p> Hosts (1 - 1000): <input type="number" name="Hosts" min="1" max="1000"> </p>
-		  <p> Apps (1 - 65k): <input type="number" name="Apps" min="1" max="65534"> </p>
-		  <p> Instances / App (1 - 100): <input type="number" name="InstancesPerApp" min="1" max="100"> </p>
+		  <p> Num Hosts (1 - 1000): <input type="number" name="NumHosts" min="1" max="1000"> </p>
+		  <p> Num Apps (1 - 65k): <input type="number" name="NumApps" min="1" max="65534"> </p>
+		  <p> Avg Instances / App (1 - 100): <input type="number" name="MeanInstancesPerApp" min="1" max="100"> </p>
 			<input type="submit" value="Submit"/>
 		</form>
   </body>
