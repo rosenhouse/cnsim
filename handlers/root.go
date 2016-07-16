@@ -28,7 +28,7 @@ const body = `
 		  <p> Hosts (1 - 1000): <input type="number" name="Hosts" min="1" max="1000"> </p>
 		  <p> Apps (1 - 65k): <input type="number" name="Apps" min="1" max="65534"> </p>
 		  <p> Instances / App (1 - 100): <input type="number" name="InstancesPerApp" min="1" max="100"> </p>
-			<input type="submit" />
+			<input type="submit" value="Submit"/>
 		</form>
   </body>
 <html>

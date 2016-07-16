@@ -8,6 +8,7 @@ import (
 	"github.com/onsi/ginkgo/config"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
+	"github.com/sclevine/agouti"
 
 	"testing"
 )
@@ -20,6 +21,7 @@ func TestAcceptance(t *testing.T) {
 const packagePath = "github.com/rosenhouse/cnsim"
 
 var pathToServer string
+var agoutiDriver *agouti.WebDriver
 
 var _ = SynchronizedBeforeSuite(func() []byte {
 	var err error
@@ -29,9 +31,14 @@ var _ = SynchronizedBeforeSuite(func() []byte {
 }, func(crossNodeData []byte) {
 	pathToServer = string(crossNodeData)
 	rand.Seed(config.GinkgoConfig.RandomSeed + int64(GinkgoParallelNode()))
+
+	agoutiDriver = agouti.PhantomJS()
+	Expect(agoutiDriver.Start()).To(Succeed())
 })
 
-var _ = SynchronizedAfterSuite(func() {}, func() {
+var _ = SynchronizedAfterSuite(func() {
+	Expect(agoutiDriver.Stop()).To(Succeed())
+}, func() {
 	gexec.CleanupBuildArtifacts()
 })
 

@@ -12,6 +12,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
 	"github.com/rosenhouse/cnsim/models"
+	"github.com/sclevine/agouti"
+	. "github.com/sclevine/agouti/matchers"
 )
 
 var _ = Describe("CNSim Server", func() {
@@ -75,4 +77,36 @@ var _ = Describe("CNSim Server", func() {
 		By("checking the mean instances per host")
 		Expect(responseData.MeanInstancesPerHost).To(Equal(20.0))
 	})
+
+	Describe("Web form", func() {
+		var page *agouti.Page
+
+		BeforeEach(func() {
+			var err error
+			page, err = agoutiDriver.NewPage()
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		AfterEach(func() {
+			Expect(page.Destroy()).To(Succeed())
+		})
+		It("provide a web interface to the API", func() {
+			By("having a root page", func() {
+				Expect(page.Navigate("http://" + address)).To(Succeed())
+			})
+
+			By("allowing the user to fill out the form and submit it", func() {
+				Eventually(page.FindByName("Hosts")).Should(BeFound())
+				Expect(page.FindByName("Hosts").Fill("100")).To(Succeed())
+				Expect(page.FindByName("Apps").Fill("300")).To(Succeed())
+				Expect(page.FindByName("InstancesPerApp").Fill("5")).To(Succeed())
+				Expect(page.FindByButton("Submit").Submit()).To(Succeed())
+			})
+
+			By("redirecting the user to the JSON response page", func() {
+				Eventually(page.HTML).Should(ContainSubstring(`"MeanInstancesPerHost":15`))
+			})
+		})
+	})
+
 })
