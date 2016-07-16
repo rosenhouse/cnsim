@@ -15,7 +15,7 @@ func (s *SteadyState) Execute(logger lager.Logger, req models.SteadyStateRequest
 	defer logger.Info("done")
 
 	var resp models.SteadyStateResponse
-	resp.SteadyStateRequest = req
+	resp.Request = req
 	totalInstances := float64(req.Apps) * float64(req.InstancesPerApp)
 	resp.MeanInstancesPerHost = totalInstances / float64(req.Hosts)
 	logger.Info("success", lager.Data{"output": resp})

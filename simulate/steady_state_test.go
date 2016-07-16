@@ -42,7 +42,7 @@ var _ = Describe("Steady state simulator", func() {
 		It("returns the request data along with the response", func() {
 			resp, err := sim.Execute(logger, req)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(resp.SteadyStateRequest).To(Equal(req))
+			Expect(resp.Request).To(Equal(req))
 		})
 
 		It("computes the average instances per host", func() {

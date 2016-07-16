@@ -17,7 +17,7 @@ func TestAcceptance(t *testing.T) {
 	RunSpecs(t, "Acceptance Suite")
 }
 
-const packagePath = "github.com/rosenhouse/cnsim/cmd/cnsim-server"
+const packagePath = "github.com/rosenhouse/cnsim"
 
 var pathToServer string
 

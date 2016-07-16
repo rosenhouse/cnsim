@@ -7,7 +7,7 @@ type SteadyStateRequest struct {
 }
 
 type SteadyStateResponse struct {
-	SteadyStateRequest
+	Request SteadyStateRequest
 
 	MeanInstancesPerHost float64
 }

@@ -51,7 +51,7 @@ var _ = Describe("Steady State Handler", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		simulator.ExecuteReturns(&models.SteadyStateResponse{
-			SteadyStateRequest: reqData,
+			Request: reqData,
 
 			MeanInstancesPerHost: 3.14159,
 		}, nil)

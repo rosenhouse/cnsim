@@ -69,9 +69,10 @@ var _ = Describe("CNSim Server", func() {
 
 		Expect(resp.StatusCode).To(Equal(200))
 
-		Expect(responseData).To(Equal(models.SteadyStateResponse{
-			SteadyStateRequest:   requestData,
-			MeanInstancesPerHost: 20.0,
-		}))
+		By("checking the original request is included with the response")
+		Expect(responseData.Request).To(Equal(requestData))
+
+		By("checking the mean instances per host")
+		Expect(responseData.MeanInstancesPerHost).To(Equal(20.0))
 	})
 })
