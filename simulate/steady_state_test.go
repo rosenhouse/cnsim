@@ -66,7 +66,7 @@ var _ = Describe("Steady state simulator", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(resp.Apps).To(HaveLen(10000))
 			for i, app := range resp.Apps {
-				Expect(app.DesiredInstanceCount).To(Equal(i + 1))
+				Expect(app.Size).To(Equal(i + 1))
 			}
 		})
 

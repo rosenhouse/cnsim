@@ -29,7 +29,7 @@ func (s *SteadyState) Execute(logger lager.Logger, req models.SteadyStateRequest
 	var err error
 	for i, _ := range resp.Apps {
 		resp.Apps[i].Id = i
-		resp.Apps[i].DesiredInstanceCount, err = s.AppSizeDistribution.Sample(float64(req.MeanInstancesPerApp))
+		resp.Apps[i].Size, err = s.AppSizeDistribution.Sample(float64(req.MeanInstancesPerApp))
 		if err != nil {
 			return nil, fmt.Errorf("sampling app size: %s", err)
 		}

@@ -14,8 +14,8 @@ type SteadyStateResponse struct {
 }
 
 type App struct {
-	Id                   int
-	DesiredInstanceCount int
+	Id   int
+	Size int
 }
 
 type APIError struct {

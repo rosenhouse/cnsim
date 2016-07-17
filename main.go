@@ -7,6 +7,7 @@ import (
 
 	"code.cloudfoundry.org/lager"
 
+	"github.com/NYTimes/gziphandler"
 	"github.com/rosenhouse/cnsim/distributions"
 	"github.com/rosenhouse/cnsim/handlers"
 	"github.com/rosenhouse/cnsim/simulate"
@@ -47,12 +48,12 @@ func main() {
 		"root": &handlers.Root{
 			Logger: logger,
 		},
-		"steady_state": &handlers.SteadyState{
+		"steady_state": gziphandler.GzipHandler(&handlers.SteadyState{
 			Logger: logger,
 			Simulator: &simulate.SteadyState{
 				AppSizeDistribution: &distributions.GeometricWithPositiveSupport{},
 			},
-		},
+		}),
 	}
 
 	router, err := rata.NewRouter(routes, rataHandlers)

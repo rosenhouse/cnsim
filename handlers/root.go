@@ -50,7 +50,7 @@ const body = `
 				 function(error, steady_state) {
 					var apps = steady_state.Apps
 					var ndx            = crossfilter(apps),
-							countDimension = ndx.dimension(function(d) {return d.DesiredInstanceCount;}),
+							countDimension = ndx.dimension(function(d) {return d.Size;}),
 							appGroup       = countDimension.group().reduceCount();
 					chartApps
 						.width(768)
