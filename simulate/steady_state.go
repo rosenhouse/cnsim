@@ -35,7 +35,7 @@ func (s *SteadyState) Execute(logger lager.Logger, req models.SteadyStateRequest
 		}
 	}
 
-	logger.Info("success", lager.Data{"output": resp})
+	logger.Info("success")
 	return &resp, nil
 }
 

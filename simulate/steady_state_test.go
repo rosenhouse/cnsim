@@ -46,7 +46,7 @@ var _ = Describe("Steady state simulator", func() {
 			sim.Execute(logger, req)
 
 			Expect(logger.Buffer()).To(gbytes.Say(`start.*input.*1000`))
-			Expect(logger.Buffer()).To(gbytes.Say(`success.*output.*500`))
+			Expect(logger.Buffer()).To(gbytes.Say(`success`))
 		})
 
 		It("returns the request data along with the response", func() {
