@@ -110,6 +110,7 @@ var _ = Describe("CNSim Server", func() {
 
 			By("showing a histogram of app sizes", func() {
 				Eventually(page.HTML).Should(ContainSubstring(`Size (instances)`))
+				Eventually(page.HTML).Should(ContainSubstring(`40</text>`)) // tick mark on y axis
 			})
 		})
 	})

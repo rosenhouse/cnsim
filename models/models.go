@@ -16,14 +16,14 @@ type SteadyStateResponse struct {
 }
 
 type App struct {
-	Id   int
-	Size int
+	Id   int `json:"-"`
+	Size int `json:"s"`
 }
 
 type Instance struct {
-	Id     int
-	AppId  int
-	HostId int
+	Id     int `json:"-"`
+	AppId  int `json:"a"`
+	HostId int `json:"h"`
 }
 
 type APIError struct {
