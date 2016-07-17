@@ -100,17 +100,16 @@ var _ = Describe("CNSim Server", func() {
 				Expect(page.Navigate("http://" + address)).To(Succeed())
 			})
 
-			By("allowing the user to fill out the form and submit it", func() {
+			By("allowing the user to fill out the form and run a simulation", func() {
 				Eventually(page.FindByName("NumHosts")).Should(BeFound())
 				Expect(page.FindByName("NumHosts").Fill("100")).To(Succeed())
 				Expect(page.FindByName("NumApps").Fill("300")).To(Succeed())
 				Expect(page.FindByName("MeanInstancesPerApp").Fill("5")).To(Succeed())
-				Expect(page.FindByButton("Submit").Submit()).To(Succeed())
+				Expect(page.FindByButton("Simulate").Click()).To(Succeed())
 			})
 
-			By("redirecting the user to the JSON response page", func() {
-				Eventually(page.HTML).Should(ContainSubstring(`"MeanInstancesPerHost":15`))
-				Eventually(page.HTML).Should(ContainSubstring(`"DesiredInstanceCount":4`))
+			By("showing a histogram of app sizes", func() {
+				Eventually(page.HTML).Should(ContainSubstring(`Size (instances)`))
 			})
 		})
 	})
