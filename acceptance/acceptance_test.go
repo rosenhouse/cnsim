@@ -70,6 +70,8 @@ var _ = Describe("CNSim Server", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(resp.StatusCode).To(Equal(200))
+		By("checking the CORS response")
+		Expect(resp.Header.Get("Access-Control-Allow-Origin")).To(Equal("*"))
 
 		By("checking the original request is included with the response")
 		Expect(responseData.Request).To(Equal(requestData))

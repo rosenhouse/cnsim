@@ -34,6 +34,7 @@ func (h *SteadyState) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer logger.Info("done")
 
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	err := r.ParseForm()
 	if err != nil {
