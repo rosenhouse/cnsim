@@ -25,18 +25,55 @@ func (s *SteadyState) Execute(logger lager.Logger, req models.SteadyStateRequest
 	resp.Request = req
 	totalInstances := float64(req.NumApps) * float64(req.MeanInstancesPerApp)
 	resp.MeanInstancesPerHost = totalInstances / float64(req.NumHosts)
-	resp.Apps = make([]models.App, req.NumApps)
-	var err error
-	for i, _ := range resp.Apps {
-		resp.Apps[i].Id = i
-		resp.Apps[i].Size, err = s.AppSizeDistribution.Sample(float64(req.MeanInstancesPerApp))
-		if err != nil {
-			return nil, fmt.Errorf("sampling app size: %s", err)
-		}
+
+	if err := s.populateApps(&resp); err != nil {
+		return nil, err
+	}
+
+	if err := s.populateInstances(&resp); err != nil {
+		return nil, err
 	}
 
 	logger.Info("success")
 	return &resp, nil
+}
+
+func (s *SteadyState) populateApps(resp *models.SteadyStateResponse) error {
+	req := resp.Request
+	resp.Apps = make([]models.App, req.NumApps)
+	var err error
+	totalInstances := 0
+	for i, _ := range resp.Apps {
+		resp.Apps[i].Id = i
+		resp.Apps[i].Size, err = s.AppSizeDistribution.Sample(float64(req.MeanInstancesPerApp))
+		if err != nil {
+			return fmt.Errorf("sampling app size: %s", err)
+		}
+		totalInstances += resp.Apps[i].Size
+	}
+	resp.TotalInstances = totalInstances
+	return nil
+}
+
+func (s *SteadyState) populateInstances(resp *models.SteadyStateResponse) error {
+	req := resp.Request
+	resp.Instances = make([]models.Instance, resp.TotalInstances)
+
+	appId := 0
+	appInstanceCounter := 0
+	for i := 0; i < resp.TotalInstances; i++ {
+		resp.Instances[i].Id = i
+
+		if appInstanceCounter >= resp.Apps[appId].Size {
+			appId++
+			appInstanceCounter = 0
+		}
+		appInstanceCounter++
+
+		resp.Instances[i].AppId = appId
+		resp.Instances[i].HostId = i % req.NumHosts
+	}
+	return nil
 }
 
 func validateRange(noun string, value int, min, max int) error {

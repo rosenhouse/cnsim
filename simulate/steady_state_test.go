@@ -2,6 +2,7 @@ package simulate_test
 
 import (
 	"errors"
+	"math/rand"
 
 	"code.cloudfoundry.org/lager/lagertest"
 	. "github.com/onsi/ginkgo"
@@ -23,7 +24,7 @@ var _ = Describe("Steady state simulator", func() {
 	BeforeEach(func() {
 		appSizeDistribution = &fakes.MeanParameterizedDiscreteDistribution{}
 		appSizeDistribution.SampleStub = func(_ float64) (int, error) {
-			return appSizeDistribution.SampleCallCount(), nil
+			return req.MeanInstancesPerApp + rand.Intn(2) - 1, nil
 		}
 		sim = &simulate.SteadyState{
 			AppSizeDistribution: appSizeDistribution,
@@ -32,7 +33,7 @@ var _ = Describe("Steady state simulator", func() {
 		req = models.SteadyStateRequest{
 			NumHosts:            1000,
 			NumApps:             10000,
-			MeanInstancesPerApp: 50,
+			MeanInstancesPerApp: 5,
 		}
 	})
 
@@ -58,16 +59,48 @@ var _ = Describe("Steady state simulator", func() {
 		It("computes the average instances per host", func() {
 			resp, err := sim.Execute(logger, req)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(resp.MeanInstancesPerHost).To(Equal(500.0))
+			Expect(resp.MeanInstancesPerHost).To(Equal(50.0))
 		})
 
 		It("populates the Apps list by sampling from the AppSizeDistribution", func() {
 			resp, err := sim.Execute(logger, req)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(resp.Apps).To(HaveLen(10000))
-			for i, app := range resp.Apps {
-				Expect(app.Size).To(Equal(i + 1))
+			for _, app := range resp.Apps {
+				Expect(app.Size).To(BeNumerically("~", req.MeanInstancesPerApp, 1))
 			}
+		})
+
+		It("populates the Instances list by trying to put apps on different hosts", func() {
+			resp, err := sim.Execute(logger, req)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(resp.Instances).To(HaveLen(resp.TotalInstances))
+
+			By("counting instances per app and per host")
+			perApp := make(map[int]int, req.NumApps)
+			perHost := make(map[int]int, req.NumHosts)
+			for _, instance := range resp.Instances {
+				perApp[instance.AppId] += 1
+				perHost[instance.HostId] += 1
+			}
+
+			By("checking that the app instance count equals the desired app Size")
+			for appId, count := range perApp {
+				Expect(count).To(Equal(resp.Apps[appId].Size))
+			}
+
+			By("checking that no host is over or under-utilized")
+			var min = len(resp.Instances)
+			var max = 0
+			for _, count := range perHost {
+				if count < min {
+					min = count
+				}
+				if count > max {
+					max = count
+				}
+			}
+			Expect(min).To(Equal(max - 1))
 		})
 
 		Context("when sampling from the app size distribution fails", func() {
@@ -79,7 +112,6 @@ var _ = Describe("Steady state simulator", func() {
 				_, err := sim.Execute(logger, req)
 				Expect(err).To(MatchError("sampling app size: banana"))
 			})
-
 		})
 	})
 
